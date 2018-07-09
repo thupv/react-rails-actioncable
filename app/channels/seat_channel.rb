@@ -11,4 +11,12 @@ class SeatChannel < ApplicationCable::Channel
     seat = Seat.find(opts['id'].to_i)
     SeatMessageJob.perform_later seat if seat
   end
+
+  def take_seat opts
+    seat = Seat.find(opts['id'].to_i)
+    return if seat.nil?
+    seat.processing_seat = seat.processing_seat + opts['noOfSeat'].to_i
+    seat.save
+    SeatMessageJob.perform_later seat
+  end
 end

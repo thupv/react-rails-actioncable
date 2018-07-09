@@ -9,24 +9,37 @@ class HelloWorld extends React.Component {
       numberOfSeat: 0,
       flyId: 0
     };
+    this.flyId = '1';
+    this.numberOfSeat = '1';
   }
 
   render() {
     return (
       <React.Fragment>
-        <input type="text" name="fly_id" placeholder='fly Id' onChange={this.handleChange.bind(this)}/><br/>
-        <input type="submit" value="Submit" onClick={this.submitBtnOnclick.bind(this)}/><br/>
+        <input type="text" name="fly_id" placeholder='fly Id' onChange={this.handleChangeFlyId.bind(this)}/><br/>
+        <input type="submit" value="Submit" onClick={this.fetchBtnOnclick.bind(this)}/><br/>
+        <input type="text" name="seat" placeholder='number of seat' onChange={this.handleChangeSeat.bind(this)}/><br/>
+        <input type="submit" value="Take" onClick={this.takeBtnOnclick.bind(this)}/><br/>
         Seat available: {this.state.numberOfSeat} for fly id: {this.state.flyId}
       </React.Fragment>
     );
   }
 
-  submitBtnOnclick(event) {
+  fetchBtnOnclick(event) {
     this.chats.fetchAvailableSeat(this.flyId);
     event.preventDefault();
   }
 
-  handleChange(event) {
+  takeBtnOnclick(event) {
+    this.chats.takeSeat(this.numberOfSeat, this.flyId);
+    event.preventDefault();
+  }
+
+  handleChangeSeat(event) {
+    this.numberOfSeat = event.target.value;
+  }
+
+  handleChangeFlyId(event) {
     this.flyId = event.target.value;
   }
 
@@ -40,18 +53,26 @@ class HelloWorld extends React.Component {
       channel: 'SeatChannel'
     }, {
       connected: () => {
-        this.chats.fetchAvailableSeat('1');
+        this.chats.fetchAvailableSeat(this.flyId);
       },
       received: (seat) => {
         console.log("Receive: ");
         console.log(seat);
-        this.setState({
-          numberOfSeat: seat.number,
-          flyId: seat.id
-        });
+        if (this.flyId === seat.id.toString()) {
+          this.setState({
+            numberOfSeat: seat.number,
+            flyId: seat.id
+          });
+        }
       },
       fetchAvailableSeat: function (flyId) {
         this.perform('fetch_available_seat', {
+          id: flyId
+        });
+      },
+      takeSeat: function (noOfSeat, flyId) {
+        this.perform('take_seat', {
+          noOfSeat: noOfSeat,
           id: flyId
         });
       }
