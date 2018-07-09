@@ -5,3 +5,8 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+Seat.create(number_seat: 10)
+Seat.create(number_seat: 20)
+Seat.create(number_seat: 30)
+Seat.create(number_seat: 40)
